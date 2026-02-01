@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Presence System | Cloud Sync v6</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --accent: #4facfe;
+            --success: #00ff88;
+            --warning: #f9d423;
+            --danger: #ff4b2b;
+            --glass: rgba(10, 25, 47, 0.9);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            background: #020617;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .bg-animate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            width: 100%;
+            max-width: 850px;
+            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
+        }
+
+        h2 { text-align: center; letter-spacing: 4px; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 20px 0; }
+
+        .schedule-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px; margin-bottom: 20px;
+        }
+
+        .schedule-item {
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px;
+            font-size: 0.65rem; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .schedule-item span { display: block; color: var(--primary); font-weight: bold; font-size: 0.8rem; }
+
+        .input-group { margin-bottom: 15px; }
+        label { font-size: 0.7rem; color: var(--primary); font-weight: 700; margin-bottom: 6px; display: block; letter-spacing: 1px; }
+
+        input, select {
+            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px;
+            color: white; font-size: 0.9rem; box-sizing: border-box;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+
+        #shift-container { display: none; }
+
+        .btn-glow {
+            width: 100%; background: linear-gradient(to right, var(--primary), var(--accent));
+            border: none; padding: 16px; border-radius: 10px; color: #020617;
+            font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+
+        .btn-glow:disabled { background: #475569; cursor: not-allowed; box-shadow: none; }
+
+        .table-wrap { margin-top: 25px; max-height: 300px; overflow-y: auto; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(0,0,0,0.6); padding: 12px; color: var(--primary); font-size: 0.75rem; text-align: left; position: sticky; top: 0; }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+
+        .status-pill { padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid currentColor; }
+        .Hadir { color: var(--success); }
+        .Izin { color: var(--warning); }
+        .Sakit { color: var(--danger); }
+        .late-alert { color: var(--danger); font-weight: bold; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .footer { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-alt { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: white; cursor: pointer; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<div class="bg-animate"></div>
+
+<div class="container">
+    <h2>📡 ABSENSI KARYAWAN</h2>
+    
+    <div class="schedule-grid">
+        <div class="schedule-item">KASIR (Pagi/Siang/Malam) <span>10:30/13:00/22:30</span></div>
+        <div class="schedule-item">CS / CRM <span>11:15</span></div>
+        <div class="schedule-item">ADMIN / MKT <span>10:30</span></div>
+    </div>
+    
+    <div class="input-group">
+        <label>SEARCH & SELECT KARYAWAN</label>
+        <input type="text" id="search" placeholder="Cari nama..." onkeyup="filter()">
+        <select id="nama" size="4" style="margin-top:8px">
+            <option value="AGUNG RAFIANSYAH">AGUNG RAFIANSYAH</option>
+            <option value="ANGEL KUSNITA PERMATA DEWI">ANGEL KUSNITA PERMATA DEWI</option>
+            <option value="ARIK DINATA KUSUMA">ARIK DINATA KUSUMA</option>
+            <option value="ARISON">ARISON</option>
+            <option value="AUREL ADHITYA ANDIK">AUREL ADHITYA ANDIK</option>
+            <option value="CUSYATI">CUSYATI</option>
+            <option value="DEDEN SURYANA">DEDEN SURYANA</option>
+            <option value="DIFI ZIANKA LISTIAWAN">DIFI ZIANKA LISTIAWAN</option>
+            <option value="DIVA PINKY">DIVA PINKY</option>
+            <option value="GALANG TRI RISKI">GALANG TRI RISKI</option>
+            <option value="HERMAN SUGITO">HERMAN SUGITO</option>
+            <option value="INDAH WULAN JULI">INDAH WULAN JULI</option>
+            <option value="INEZ WULANDARI">INEZ WULANDARI</option>
+            <option value="M GADAVI">M GADAVI</option>
+            <option value="MALEK RAHMAD">MALEK RAHMAD</option>
+            <option value="MUHAMMAD ALFAYET">MUHAMMAD ALFAYET</option>
+            <option value="MUHAMMAD NURHADI">MUHAMMAD NURHADI</option>
+            <option value="MUHAMMAD RIDWAN HIDAYAT">MUHAMMAD RIDWAN HIDAYAT</option>
+            <option value="NANDI RAMDAS SAPUTRA">NANDI RAMDAS SAPUTRA</option>
+            <option value="NOVRIAN SAPUTRA">NOVRIAN SAPUTRA</option>
+            <option value="PUTRI AJI MEINASARI">PUTRI AJI MEINASARI</option>
+            <option value="RIAN APRIANSYAH">RIAN APRIANSYAH</option>
+            <option value="RIZKY HENDRA">RIZKY HENDRA</option>
+            <option value="SAHFIRA DEWI MARPAUNG">SAHFIRA DEWI MARPAUNG</option>
+            <option value="SARAH SITOMPUL">SARAH SITOMPUL</option>
+            <option value="SAYUTI">SAYUTI</option>
+            <option value="YOGI HENDAR PRASETYA">YOGI HENDAR PRASETYA</option>
+            <option value="YUSRIL ARDIANSYAH">YUSRIL ARDIANSYAH</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <div class="input-group">
+            <label>DIVISI</label>
+            <select id="divisi" onchange="toggleShift()">
+                <option value="kasir">KASIR</option>
+                <option value="cs">CS</option>
+                <option value="admin">ADMIN</option>
+                <option value="marketing">MARKETING</option>
+                <option value="crm">CRM</option>
+            </select>
+        </div>
+        <div class="input-group" id="shift-container">
+            <label>SHIFT (KHUSUS KASIR)</label>
+            <select id="shift">
+                <option value="pagi">SHIFT PAGI</option>
+                <option value="siang">SHIFT SIANG</option>
+                <option value="malam">SHIFT MALAM</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>STATUS</label>
+            <select id="status">
+                <option value="Hadir">HADIR</option>
+                <option value="Izin">IZIN</option>
+                <option value="Sakit">SAKIT</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn-glow" id="btnAbsen" onclick="absen()">AUTHORIZE PRESENCE</button>
+
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>NAMA</th><th>DIVISI/SHIFT</th><th>STATUS</th><th>TIME LOG</th></tr></thead>
+            <tbody id="list"></tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <button class="btn-alt" onclick="download()">EXPORT CSV</button>
+        <button class="btn-alt" onclick="reset()" style="color:var(--danger)">WIPE SYSTEM</button>
+    </div>
+</div>
+
+<script>
+    const JADWAL_NORMAL = {
+        cs: { h: 11, m: 15 },
+        admin: { h: 10, m: 30 },
+        marketing: { h: 10, m: 30 },
+        crm: { h: 11, m: 15 }
+    };
+
+    const JADWAL_KASIR = {
+        pagi: { h: 10, m: 30 },
+        siang: { h: 13, m: 0 },
+        malam: { h: 22, m: 30 }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        load();
+        toggleShift();
+    });
+
+    function toggleShift() {
+        const div = document.getElementById('divisi').value;
+        const shiftCont = document.getElementById('shift-container');
+        shiftCont.style.display = (div === 'kasir') ? 'block' : 'none';
+    }
+
+    function filter() {
+        let v = document.getElementById('search').value.toUpperCase();
+        let opts = document.getElementById('nama').options;
+        for(let o of opts) o.style.display = o.text.includes(v) ? "" : "none";
+    }
+
+    function absen() {
+        const n = document.getElementById('nama');
+        const d = document.getElementById('divisi');
+        const sh = document.getElementById('shift');
+        const s = document.getElementById('status');
+        const btn = document.getElementById('btnAbsen');
+        
+        if(!n.value) return alert("PILIH NAMA!");
+
+        const sekarang = new Date();
+        const jam = sekarang.getHours();
+        const menit = sekarang.getMinutes();
+        
+        let terlambat = false;
+        let infoDivisi = d.value.toUpperCase();
+
+        if(s.value === "Hadir") {
+            if(d.value === 'kasir') {
+                const batas = JADWAL_KASIR[sh.value];
+                infoDivisi += ` (${sh.value.toUpperCase()})`;
+                if(jam > batas.h || (jam === batas.h && menit > batas.m)) terlambat = true;
+            } else {
+                const batas = JADWAL_NORMAL[d.value];
+                if(jam > batas.h || (jam === batas.h && menit > batas.m)) terlambat = true;
+            }
+        }
+
+        const waktuStr = sekarang.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) + " | " + sekarang.toLocaleDateString('id-ID');
+        
+        const data = { 
+            nama: n.value, 
+            divisi: infoDivisi, 
+            status: s.value, 
+            waktu: waktuStr, 
+            late: terlambat 
+        };
+
+        // --- BAGIAN SYNC KE GOOGLE SHEETS ---
+        btn.disabled = true;
+        btn.innerText = "SYNCING...";
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw1rKF7UeITZBkghQU1NMVZ8I-7IQuQsExeWNDKPk_Ur5skYmJRxX3HPr4E-EuRxv8z1g/exec'; // Masukkan URL Web App kamu di sini
+
+        fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data) 
+        })
+        .then(() => {
+            alert("Absen Berhasil Terkirim ke Cloud!");
+            btn.disabled = false;
+            btn.innerText = "AUTHORIZE PRESENCE";
+        })
+        .catch(error => {
+            console.error('Error!', error.message);
+            alert("Gagal Sinkron, Data hanya tersimpan lokal.");
+            btn.disabled = false;
+            btn.innerText = "AUTHORIZE PRESENCE";
+        });
+
+        // Simpan Lokal sebagai cadangan
+        let logs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
+        logs.unshift(data);
+        localStorage.setItem('tech_shift_v5', JSON.stringify(logs));
+        
+        n.value = "";
+        load();
+    }
+
+    function load() {
+        const container = document.getElementById('list');
+        const logs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
+        container.innerHTML = logs.map(l => `
+            <tr>
+                <td><strong>${l.nama}</strong></td>
+                <td style="font-size:0.7rem; color:var(--primary)">${l.divisi}</td>
+                <td><span class="status-pill ${l.status}">${l.status.toUpperCase()}</span></td>
+                <td class="${l.late ? 'late-alert' : ''}">${l.waktu} ${l.late ? ' [LATE]' : ''}</td>
+            </tr>
+        `).join('');
+    }
+
+    function download() {
+        const logs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
+        if(!logs.length) return;
+        let csv = "Nama,Divisi/Shift,Status,Waktu,Terlambat\n" + logs.map(l => `${l.nama},${l.divisi},${l.status},${l.waktu},${l.late}`).join("\n");
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+        a.download = 'Rekap_Absensi.csv';
+        a.click();
+    }
+
+    function reset() {
+        if(confirm("WIPE DATA?")) { localStorage.removeItem('tech_shift_v5'); load(); }
+    }
+</script>
+</body>
+</html>
