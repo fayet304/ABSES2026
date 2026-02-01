@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Presence System | Cloud Sync v6</title>
+    <title>Enterprise Presence System | Global Sync v7</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -200,9 +200,13 @@
         malam: { h: 22, m: 30 }
     };
 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw1rKF7UeITZBkghQU1NMVZ8I-7IQuQsExeWNDKPk_Ur5skYmJRxX3HPr4E-EuRxv8z1g/exec';
+
     document.addEventListener('DOMContentLoaded', () => {
         load();
         toggleShift();
+        // Auto-refresh data dari Cloud setiap 30 detik
+        setInterval(load, 30000); 
     });
 
     function toggleShift() {
@@ -254,11 +258,8 @@
             late: terlambat 
         };
 
-        // --- BAGIAN SYNC KE GOOGLE SHEETS ---
         btn.disabled = true;
         btn.innerText = "SYNCING...";
-
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbw1rKF7UeITZBkghQU1NMVZ8I-7IQuQsExeWNDKPk_Ur5skYmJRxX3HPr4E-EuRxv8z1g/exec'; // Masukkan URL Web App kamu di sini
 
         fetch(scriptURL, { 
             method: 'POST', 
@@ -270,48 +271,75 @@
             alert("Absen Berhasil Terkirim ke Cloud!");
             btn.disabled = false;
             btn.innerText = "AUTHORIZE PRESENCE";
+            load(); // Muat ulang tabel setelah sukses
         })
         .catch(error => {
             console.error('Error!', error.message);
-            alert("Gagal Sinkron, Data hanya tersimpan lokal.");
+            alert("Gagal Sinkron ke Cloud.");
             btn.disabled = false;
             btn.innerText = "AUTHORIZE PRESENCE";
         });
 
-        // Simpan Lokal sebagai cadangan
-        let logs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
-        logs.unshift(data);
-        localStorage.setItem('tech_shift_v5', JSON.stringify(logs));
-        
         n.value = "";
-        load();
     }
 
-    function load() {
+    // FUNGSI LOAD TERBARU: Mengambil data langsung dari Google Sheets
+    async function load() {
         const container = document.getElementById('list');
-        const logs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
-        container.innerHTML = logs.map(l => `
-            <tr>
-                <td><strong>${l.nama}</strong></td>
-                <td style="font-size:0.7rem; color:var(--primary)">${l.divisi}</td>
-                <td><span class="status-pill ${l.status}">${l.status.toUpperCase()}</span></td>
-                <td class="${l.late ? 'late-alert' : ''}">${l.waktu} ${l.late ? ' [LATE]' : ''}</td>
-            </tr>
-        `).join('');
+        
+        try {
+            const response = await fetch(scriptURL);
+            const cloudData = await response.json();
+            
+            if (cloudData.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" style="text-align:center">Belum ada data di cloud.</td></tr>';
+                return;
+            }
+
+            // Tampilkan data dari Cloud (Data terbaru di atas)
+            container.innerHTML = cloudData.reverse().map(l => `
+                <tr>
+                    <td><strong>${l.nama}</strong></td>
+                    <td style="font-size:0.7rem; color:var(--primary)">${l.divisi}</td>
+                    <td><span class="status-pill ${l.status}">${l.status.toUpperCase()}</span></td>
+                    <td class="${l.late ? 'late-alert' : ''}">${l.waktu} ${l.late ? ' [LATE]' : ''}</td>
+                </tr>
+            `).join('');
+            
+        } catch (error) {
+            console.error("Gagal load cloud data:", error);
+            // Jika gagal load cloud, gunakan cadangan data lokal
+            const localLogs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
+            container.innerHTML = localLogs.map(l => `
+                <tr>
+                    <td><strong>${l.nama}</strong></td>
+                    <td style="font-size:0.7rem; color:var(--primary)">${l.divisi}</td>
+                    <td><span class="status-pill ${l.status}">${l.status.toUpperCase()}</span></td>
+                    <td class="${l.late ? 'late-alert' : ''}">${l.waktu} ${l.late ? ' [LATE]' : ''}</td>
+                </tr>
+            `).join('');
+        }
     }
 
     function download() {
-        const logs = JSON.parse(localStorage.getItem('tech_shift_v5')) || [];
-        if(!logs.length) return;
-        let csv = "Nama,Divisi/Shift,Status,Waktu,Terlambat\n" + logs.map(l => `${l.nama},${l.divisi},${l.status},${l.waktu},${l.late}`).join("\n");
+        // Mendownload rekap dari tampilan tabel saat ini
+        const rows = Array.from(document.querySelectorAll("table tr")).slice(1);
+        let csv = "Nama,Divisi/Shift,Status,Waktu\n";
+        rows.forEach(row => {
+            const cols = Array.from(row.querySelectorAll("td")).map(td => td.innerText.replace('[LATE]', '').trim());
+            csv += cols.join(",") + "\n";
+        });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
-        a.download = 'Rekap_Absensi.csv';
+        a.download = 'Rekap_Absensi_Global.csv';
         a.click();
     }
 
     function reset() {
-        if(confirm("WIPE DATA?")) { localStorage.removeItem('tech_shift_v5'); load(); }
+        if(confirm("Hanya menghapus riwayat di browser ini. Data di Google Sheets tetap aman. Lanjutkan?")) { 
+            localStorage.removeItem('tech_shift_v5'); 
+            load(); 
+        }
     }
 </script>
 </body>
