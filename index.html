@@ -3,339 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Presence System | One-Row v10</title>
+    <title>Enterprise Presence System | Full Features v12</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #00f2fe; --accent: #4facfe; --success: #00ff88;
             --warning: #f9d423; --danger: #ff4b2b; --glass: rgba(10, 25, 47, 0.9);
         }
-
-        body {
-            font-family: 'Space Grotesk', sans-serif; margin: 0; background: #020617; color: #e2e8f0;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
-        }
-
-        .bg-animate {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
-        }
-
-        .container {
-            background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px; padding: 30px; width: 100%; max-width: 850px;
-            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
-        }
-
+        body { font-family: 'Space Grotesk', sans-serif; margin: 0; background: #020617; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .bg-animate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%); }
+        .container { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 30px; width: 100%; max-width: 850px; box-shadow: 0 0 50px rgba(0, 242, 254, 0.2); }
         h2 { text-align: center; letter-spacing: 4px; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 20px 0; }
-
-        .schedule-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px; margin-bottom: 20px;
-        }
-
-        .schedule-item {
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px;
-            font-size: 0.65rem; text-align: center; border: 1px solid rgba(255,255,255,0.1);
-        }
-
+        .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .schedule-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; font-size: 0.65rem; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         .schedule-item span { display: block; color: var(--primary); font-weight: bold; font-size: 0.8rem; }
-
-        .input-group { margin-bottom: 15px; }
-        label { font-size: 0.7rem; color: var(--primary); font-weight: 700; margin-bottom: 6px; display: block; letter-spacing: 1px; }
-
-        input, select {
-            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px;
-            color: white; font-size: 0.9rem; box-sizing: border-box;
-        }
-
+        input, select { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 0.9rem; box-sizing: border-box; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        #shift-container { display: none; }
-
-        .btn-glow {
-            width: 100%; background: linear-gradient(to right, var(--primary), var(--accent));
-            border: none; padding: 16px; border-radius: 10px; color: #020617;
-            font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase;
-        }
-
-        .btn-glow:disabled { background: #475569; cursor: not-allowed; }
-
-        .menu-izin {
-            background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.2);
-            padding: 20px; border-radius: 15px; margin: 20px 0;
-        }
-
-        .timer-box {
-            text-align: center; font-size: 1.2rem; color: var(--warning);
-            font-weight: bold; margin-top: 10px; display: none;
-        }
-
-        .table-wrap { margin-top: 25px; max-height: 350px; overflow-y: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: rgba(0,0,0,0.8); padding: 12px; color: var(--primary); font-size: 0.75rem; text-align: left; position: sticky; top: 0; z-index: 10; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; vertical-align: top; }
-
-        .status-pill { padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid currentColor; }
-        .late-alert { color: var(--danger); font-weight: bold; animation: pulse 1.5s infinite; }
-        small { display: block; line-height: 1.4; margin-top: 4px; color: #cbd5e1; font-size: 0.75rem; }
+        .btn-glow { width: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); border: none; padding: 16px; border-radius: 10px; color: #020617; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .footer { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-alt { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: white; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+        /* Menu Izin Section */
+        .menu-izin { background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px; margin: 20px 0; text-align: center; }
+        .timer-box { font-size: 1.2rem; color: var(--warning); font-weight: bold; display: none; margin-top: 10px; }
+        
+        /* Filter Section */
+        .filter-section { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin: 20px 0 10px 0; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .table-wrap { max-height: 350px; overflow-y: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(0,0,0,0.8); padding: 12px; color: var(--primary); font-size: 0.75rem; text-align: left; position: sticky; top: 0; }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        
+        /* Late Monitor */
+        .late-monitor { position: fixed; bottom: 20px; right: 20px; width: 260px; max-height: 380px; background: rgba(15, 23, 42, 0.9); border: 2px solid var(--danger); border-radius: 16px; padding: 15px; box-shadow: 0 0 30px rgba(255, 75, 43, 0.3); z-index: 1000; backdrop-filter: blur(15px); overflow-y: auto; }
+        .late-header { font-size: 0.75rem; font-weight: 800; color: var(--danger); margin-bottom: 10px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255, 75, 43, 0.3); padding-bottom: 5px; }
+        .late-card { background: rgba(255, 75, 43, 0.1); border-left: 3px solid var(--danger); padding: 10px; margin-bottom: 8px; border-radius: 4px; font-size: 0.7rem; }
+        .btn-alt { padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: white; cursor: pointer; font-weight: bold; }
+        .late-alert { color: var(--danger); font-weight: bold; }
     </style>
 </head>
 <body>
+    <div class="bg-animate"></div>
+    <div class="container">
+        <h2>📡 DASHBOARD ABSENSI</h2>
+        
+        <div class="schedule-grid">
+            <div class="schedule-item">KASIR / CS <span>PAGI 10:30 | SIANG 13:00 | MALAM 22:30</span></div>
+            <div class="schedule-item">MKT / CRM <span>11:15</span></div>
+            <div class="schedule-item">ADMIN / STAFF <span>10:30</span></div>
+        </div>
 
-<div class="bg-animate"></div>
-
-<div class="container">
-    <h2>📡 DASHBOARD ABSENSI</h2>
-    
-    <div class="schedule-grid">
-        <div class="schedule-item">KASIR / CS <span>10:30/13:00/22:30</span></div>
-        <div class="schedule-item">MKT / CRM <span>11:15</span></div>
-        <div class="schedule-item">ADMIN / STAFF <span>10:30</span></div>
-    </div>
-    
-    <div class="input-group">
-        <label>PILIH KARYAWAN</label>
-        <input type="text" id="search" placeholder="Cari nama..." onkeyup="filter()">
-        <select id="nama" size="4" style="margin-top:8px">
-            <option value="AGUNG RAFIANSYAH">AGUNG RAFIANSYAH</option>
-            <option value="ANGEL KUSNITA PERMATA DEWI">ANGEL KUSNITA PERMATA DEWI</option>
-            <option value="ARIK DINATA KUSUMA">ARIK DINATA KUSUMA</option>
-            <option value="ARISON">ARISON</option>
-            <option value="AUREL ADHITYA ANDIK">AUREL ADHITYA ANDIK</option>
-            <option value="CUSYATI">CUSYATI</option>
-            <option value="DEDEN SURYANA">DEDEN SURYANA</option>
-            <option value="DIFI ZIANKA LISTIAWAN">DIFI ZIANKA LISTIAWAN</option>
-            <option value="DIVA PINKY">DIVA PINKY</option>
-            <option value="GALANG TRI RISKI">GALANG TRI RISKI</option>
-            <option value="HERMAN SUGITO">HERMAN SUGITO</option>
-            <option value="INDAH WULAN JULI">INDAH WULAN JULI</option>
-            <option value="INEZ WULANDARI">INEZ WULANDARI</option>
-            <option value="M GADAVI">M GADAVI</option>
-            <option value="MALEK RAHMAD">MALEK RAHMAD</option>
-            <option value="MUHAMMAD ALFAYET">MUHAMMAD ALFAYET</option>
-            <option value="MUHAMMAD NURHADI">MUHAMMAD NURHADI</option>
-            <option value="MUHAMMAD RIDWAN HIDAYAT">MUHAMMAD RIDWAN HIDAYAT</option>
-            <option value="NANDI RAMDAS SAPUTRA">NANDI RAMDAS SAPUTRA</option>
-            <option value="NOVRIAN SAPUTRA">NOVRIAN SAPUTRA</option>
-            <option value="PUTRI AJI MEINASARI">PUTRI AJI MEINASARI</option>
-            <option value="RIAN APRIANSYAH">RIAN APRIANSYAH</option>
-            <option value="RIZKY HENDRA">RIZKY HENDRA</option>
-            <option value="SAHFIRA DEWI MARPAUNG">SAHFIRA DEWI MARPAUNG</option>
-            <option value="SARAH SITOMPUL">SARAH SITOMPUL</option>
-            <option value="SAYUTI">SAYUTI</option>
-            <option value="YOGI HENDAR PRASETYA">YOGI HENDAR PRASETYA</option>
-            <option value="YUSRIL ARDIANSYAH">YUSRIL ARDIANSYAH</option>
-        </select>
-    </div>
-
-    <div class="form-row">
         <div class="input-group">
-            <label>DIVISI</label>
+            <label>CARI NAMA</label>
+            <input type="text" id="search" placeholder="Ketik nama..." onkeyup="filterNames()">
+            <select id="nama" size="4" style="margin-top:10px">
+                <option value="AGUNG RAFIANSYAH">AGUNG RAFIANSYAH</option>
+                <option value="ANGEL KUSNITA PERMATA DEWI">ANGEL KUSNITA PERMATA DEWI</option>
+                <option value="ARIK DINATA KUSUMA">ARIK DINATA KUSUMA</option>
+                <option value="ARISON">ARISON</option>
+                <option value="AUREL ADHITYA ANDIK">AUREL ADHITYA ANDIK</option>
+                <option value="CUSYATI">CUSYATI</option>
+                <option value="DEDEN SURYANA">DEDEN SURYANA</option>
+                <option value="DIFI ZIANKA LISTIAWAN">DIFI ZIANKA LISTIAWAN</option>
+                <option value="DIVA PINKY">DIVA PINKY</option>
+                <option value="GALANG TRI RISKI">GALANG TRI RISKI</option>
+                <option value="HERMAN SUGITO">HERMAN SUGITO</option>
+                <option value="INDAH WULAN JULI">INDAH WULAN JULI</option>
+                <option value="INEZ WULANDARI">INEZ WULANDARI</option>
+                <option value="M GADAVI">M GADAVI</option>
+                <option value="MALEK RAHMAD">MALEK RAHMAD</option>
+                <option value="MUHAMMAD ALFAYET">MUHAMMAD ALFAYET</option>
+                <option value="MUHAMMAD NURHADI">MUHAMMAD NURHADI</option>
+                <option value="MUHAMMAD RIDWAN HIDAYAT">MUHAMMAD RIDWAN HIDAYAT</option>
+                <option value="NANDI RAMDAS SAPUTRA">NANDI RAMDAS SAPUTRA</option>
+                <option value="NOVRIAN SAPUTRA">NOVRIAN SAPUTRA</option>
+                <option value="PUTRI AJI MEINASARI">PUTRI AJI MEINASARI</option>
+                <option value="RIAN APRIANSYAH">RIAN APRIANSYAH</option>
+                <option value="RIZKY HENDRA">RIZKY HENDRA</option>
+                <option value="SAHFIRA DEWI MARPAUNG">SAHFIRA DEWI MARPAUNG</option>
+                <option value="SARAH SITOMPUL">SARAH SITOMPUL</option>
+                <option value="SAYUTI">SAYUTI</option>
+                <option value="YOGI HENDAR PRASETYA">YOGI HENDAR PRASETYA</option>
+                <option value="YUSRIL ARDIANSYAH">YUSRIL ARDIANSYAH</option>
+            </select>
+        </div>
+
+        <div class="form-row" style="margin-top:15px">
             <select id="divisi" onchange="toggleShift()">
                 <option value="kasir">KASIR</option>
                 <option value="cs">CS</option>
                 <option value="admin">ADMIN</option>
                 <option value="STAFF">STAFF</option>
                 <option value="marketing">MARKETING</option>
-                <option value="crm">CRM</option>
             </select>
-        </div>
-        <div class="input-group" id="shift-container">
-            <label>SHIFT</label>
-            <select id="shift">
-                <option value="None">None</option>
-                <option value="pagi">PAGI</option>
-                <option value="siang">SIANG</option>
-                <option value="malam">MALAM</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>STATUS</label>
-            <select id="status">
-                <option value="None">None</option>
-                <option value="HADIR">HADIR</option>
-                <option value="PULANG">PULANG</option>
-            </select>
-        </div>
-    </div>
-
-    <button class="btn-glow" id="btnAbsen" onclick="absen()">SUBMIT ABSEN</button>
-
-    <div class="menu-izin">
-        <label style="color: var(--warning); font-size: 0.8rem;">🛑 MENU IZIN & ISTIRAHAT (DURASI MENIT & DETIK)</label>
-        <div class="form-row" style="margin-top: 10px; grid-template-columns: 1.5fr 1fr;">
-            <select id="tipeIzin">
-                <option value="Toilet 🚽">Toilet 🚽 (Maks 15m)</option>
-                <option value="Beli Makan 🍔">Beli Makan 🍔 (Maks 15m)</option>
-                <option value="Merokok 🚬">Merokok 🚬 (Maks 15m)</option>
-                <option value="Istirahat Marketing 🍱">Istirahat Marketing 🍱</option>
-            </select>
-            <div style="display: flex; gap: 5px; height: 44px;">
-                <button class="btn-alt" id="btnStart" onclick="startTimer()" style="background: var(--success); color: #020617;">START</button>
-                <button class="btn-alt" id="btnStop" onclick="stopTimer()" style="background: var(--danger); color: white;" disabled>STOP</button>
+            <div id="shift-container">
+                <select id="shift">
+                    <option value="pagi">SHIFT PAGI</option>
+                    <option value="siang">SHIFT SIANG</option>
+                    <option value="malam">SHIFT MALAM</option>
+                </select>
             </div>
+            <select id="status"><option value="HADIR">HADIR</option><option value="PULANG">PULANG</option></select>
         </div>
-        <div class="timer-box" id="timerDisplay">⏳ BERJALAN: <span id="seconds">0</span> DETIK</div>
+        <button class="btn-glow" id="btnAbsen" onclick="absen()">SUBMIT ABSEN</button>
+
+        <div class="menu-izin">
+            <h4 style="margin-top:0; color:var(--primary)">PENGATURAN IZIN</h4>
+            <select id="tipeIzin" style="width: 50%; margin-bottom: 10px;">
+                <option value="Toilet 🚽">Toilet 🚽</option>
+                <option value="Beli Makan 🍔">Beli Makan 🍔</option>
+                <option value="Merokok 🚬">Merokok 🚬</option>
+            </select>
+            <br>
+            <button class="btn-alt" id="btnStart" onclick="startTimer()" style="background:var(--success); color:#000">START</button>
+            <button class="btn-alt" id="btnStop" onclick="stopTimer()" style="background:var(--danger)" disabled>STOP</button>
+            <div class="timer-box" id="timerDisplay">⏳ <span id="seconds">0</span> DETIK</div>
+        </div>
+
+        <div class="filter-section">
+            <label>📅 LIHAT TANGGAL:</label>
+            <input type="date" id="filterDate" onchange="renderData()">
+            <button class="btn-alt" onclick="resetFilter()" style="font-size:0.7rem; padding: 5px 10px;">RESET</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>NAMA/DIVISI</th><th>STATUS</th><th>LOG WAKTU</th></tr></thead>
+                <tbody id="list"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="table-wrap">
-        <table>
-            <thead><tr><th>NAMA / DIVISI</th><th>STATUS</th><th>LOG WAKTU & KETERANGAN</th></tr></thead>
-            <tbody id="list"></tbody>
-        </table>
+    <div class="late-monitor">
+        <div class="late-header"><span>⚠️ LATE/OVER LIMIT</span> <span id="lateCount">0</span></div>
+        <div id="lateList"></div>
     </div>
 
-    <div class="footer">
-        <button class="btn-alt" onclick="load()">🔄 REFRESH DATA</button>
-        <button class="btn-alt" onclick="download()">📥 DOWNLOAD CSV</button>
-    </div>
-</div>
-
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw1rKF7UeITZBkghQU1NMVZ8I-7IQuQsExeWNDKPk_Ur5skYmJRxX3HPr4E-EuRxv8z1g/exec';
-    
-    let startTime;
-    let timerInterval;
-
-    const JADWAL_NORMAL = { cs: { h: 11, m: 15 }, admin: { h: 10, m: 30 }, marketing: { h: 10, m: 30 }, crm: { h: 11, m: 15 } };
-    const JADWAL_KASIR = { pagi: { h: 10, m: 30 }, siang: { h: 13, m: 0 }, malam: { h: 22, m: 30 } };
-
-    document.addEventListener('DOMContentLoaded', () => { load(); toggleShift(); setInterval(load, 30000); });
-
-    function toggleShift() {
-        const div = document.getElementById('divisi').value;
-        document.getElementById('shift-container').style.display = (div === 'kasir') ? 'block' : 'none';
-    }
-
-    function filter() {
-        let v = document.getElementById('search').value.toUpperCase();
-        let opts = document.getElementById('nama').options;
-        for(let o of opts) o.style.display = o.text.includes(v) ? "" : "none";
-    }
-
-    async function absen() {
-        const n = document.getElementById('nama');
-        const d = document.getElementById('divisi');
-        const sh = document.getElementById('shift');
-        const s = document.getElementById('status');
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw1rKF7UeITZBkghQU1NMVZ8I-7IQuQsExeWNDKPk_Ur5skYmJRxX3HPr4E-EuRxv8z1g/exec';
+        let startTime, timerInterval;
+        let rawData = [];
         
-        if(!n.value) return alert("PILIH NAMA!");
+        const JADWAL = { 
+            admin: { h: 10, m: 30 }, 
+            marketing: { h: 10, m: 30 }, 
+            STAFF: { h: 10, m: 30 }, 
+            pagi: { h: 10, m: 30 }, 
+            siang: { h: 13, m: 0 }, 
+            malam: { h: 22, m: 30 } 
+        };
 
-        const sekarang = new Date();
-        let terlambat = false;
-        let infoDivisi = d.value.toUpperCase();
+        function toggleShift() {
+            const d = document.getElementById('divisi').value;
+            document.getElementById('shift-container').style.display = (d === 'kasir' || d === 'cs') ? 'block' : 'none';
+        }
 
-        if(s.value === "Hadir") {
-            const jam = sekarang.getHours();
-            const menit = sekarang.getMinutes();
-            if(d.value === 'kasir') {
-                const batas = JADWAL_KASIR[sh.value];
-                infoDivisi += ` (${sh.value.toUpperCase()})`;
-                if(jam > batas.h || (jam === batas.h && menit > batas.m)) terlambat = true;
-            } else {
-                const batas = JADWAL_NORMAL[d.value];
-                if(jam > batas.h || (jam === batas.h && menit > batas.m)) terlambat = true;
+        function filterNames() {
+            let v = document.getElementById('search').value.toUpperCase();
+            let opts = document.getElementById('nama').options;
+            for(let o of opts) o.style.display = o.text.includes(v) ? "" : "none";
+        }
+
+        async function load() {
+            try {
+                const res = await fetch(scriptURL);
+                rawData = await res.json();
+                renderData();
+            } catch (e) { console.log("Refresh..."); }
+        }
+
+        function renderData() {
+            const filterVal = document.getElementById('filterDate').value;
+            let filtered = rawData.slice().reverse();
+
+            if (filterVal) {
+                const [y, m, d] = filterVal.split('-');
+                const targetDate = `${parseInt(d)}/${parseInt(m)}/${y}`;
+                filtered = filtered.filter(item => item.waktu.includes(targetDate));
             }
-        }
 
-        const data = { 
-            nama: n.value, divisi: infoDivisi, status: s.value.toUpperCase(), 
-            waktu: sekarang.toLocaleString('id-ID'), late: terlambat, keterangan: terlambat ? "TERLAMBAT DATANG" : "-" 
-        };
-
-        await syncCloud(data, "ABSEN BERHASIL!");
-        n.value = "";
-    }
-
-    function startTimer() {
-        if(!document.getElementById('nama').value) return alert("PILIH NAMA DULU!");
-        startTime = new Date();
-        document.getElementById('btnStart').disabled = true;
-        document.getElementById('btnStop').disabled = false;
-        document.getElementById('timerDisplay').style.display = 'block';
-        
-        let sec = 0;
-        timerInterval = setInterval(() => {
-            sec++;
-            document.getElementById('seconds').innerText = sec;
-        }, 1000);
-        alert("Izin dimulai pukul: " + startTime.toLocaleTimeString('id-ID'));
-    }
-
-    async function stopTimer() {
-        clearInterval(timerInterval);
-        const endTime = new Date();
-        const tipe = document.getElementById('tipeIzin').value;
-        const n = document.getElementById('nama').value;
-        
-        const diffMs = endTime - startTime;
-        const totalDetik = Math.floor(diffMs / 1000);
-        const m = Math.floor(totalDetik / 60);
-        const s = totalDetik % 60;
-        
-        let overLimit = false;
-        let ket = `OUT: ${startTime.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'})} | ` +
-                  `IN: ${endTime.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'})} | ` +
-                  `DURASI: ${m}m ${s}s`;
-
-        const restricted = ["Toilet 🚽", "Beli Makan 🍔", "Merokok 🚬"];
-        if (restricted.includes(tipe) && totalDetik > 900) {
-            overLimit = true;
-            ket += " | ⚠️ MELEWATI BATAS WAKTU !!!";
-            alert("PERINGATAN: MELEWATI BATAS 15 MENIT!");
-        }
-
-        const dataIzin = {
-            nama: n, divisi: "IZIN", status: tipe, waktu: endTime.toLocaleString('id-ID'), 
-            late: overLimit, keterangan: ket
-        };
-
-        await syncCloud(dataIzin, "LOG IZIN TERSIMPAN!");
-        
-        document.getElementById('btnStart').disabled = false;
-        document.getElementById('btnStop').disabled = true;
-        document.getElementById('timerDisplay').style.display = 'none';
-        document.getElementById('seconds').innerText = "0";
-    }
-
-    async function syncCloud(payload, msg) {
-        const btn = document.getElementById('btnAbsen');
-        btn.innerText = "SYNCING...";
-        btn.disabled = true;
-        try {
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert(msg);
-            load();
-        } catch (e) { alert("GAGAL SYNC!"); }
-        btn.innerText = "AUTHORIZE PRESENCE";
-        btn.disabled = false;
-    }
-
-    async function load() {
-        const container = document.getElementById('list');
-        try {
-            const res = await fetch(scriptURL);
-            const data = await res.json();
-            container.innerHTML = data.reverse().slice(0, 50).map(l => `
+            // Update Tabel
+            document.getElementById('list').innerHTML = filtered.slice(0, 50).map(l => `
                 <tr>
-                    <td><strong>${l.nama}</strong><br><span style="font-size:0.65rem; color:var(--primary)">${l.divisi}</span></td>
-                    <td><span class="status-pill">${l.status}</span></td>
-                    <td class="${l.late ? 'late-alert' : ''}">
-                        <span style="font-size:0.8rem">${l.waktu}</span>
-                        <small>${l.keterangan || '-'}</small>
-                    </td>
+                    <td><b>${l.nama}</b><br>${l.divisi}</td>
+                    <td>${l.status}</td>
+                    <td class="${l.late ? 'late-alert' : ''}">${l.waktu}<br><small>${l.keterangan}</small></td>
                 </tr>
             `).join('');
-        } catch (e) { container.innerHTML = '<tr><td colspan="3">Menghubungkan ke cloud...</td></tr>'; }
-    }
 
-    function download() { window.open(scriptURL.replace('/exec', '/view'), '_blank'); }
-</script>
+            // Update Monitor Late
+            const lates = filtered.filter(l => l.late);
+            document.getElementById('lateCount').innerText = lates.length;
+            document.getElementById('lateList').innerHTML = lates.map(l => {
+                let label = (l.divisi.includes("IZIN")) ? "MELEBIHI WAKTU" : "TERLAMBAT";
+                return `
+                    <div class="late-card">
+                        <b>${l.nama}</b><br>
+                        <span style="color:var(--warning); font-weight:bold;">[${label}]</span><br>
+                        <small>${l.status} - ${l.keterangan}</small>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetFilter() {
+            document.getElementById('filterDate').value = "";
+            renderData();
+        }
+
+        async function absen() {
+            const n = document.getElementById('nama').value;
+            const d = document.getElementById('divisi').value;
+            const s = document.getElementById('status').value;
+            if(!n) return alert("PILIH NAMA!");
+
+            const sekarang = new Date();
+            let late = false;
+            let ket = "-";
+
+            if(s === "HADIR") {
+                let batas = (d === 'kasir' || d === 'cs') ? JADWAL[document.getElementById('shift').value] : JADWAL[d];
+                if(sekarang.getHours() > batas.h || (sekarang.getHours() === batas.h && sekarang.getMinutes() > batas.m)) {
+                    late = true; ket = "TERLAMBAT";
+                }
+            }
+
+            await sendData({ 
+                nama: n, 
+                divisi: d.toUpperCase() + ( (d==='cs'||d==='kasir') ? " ("+document.getElementById('shift').value.toUpperCase()+")" : "" ), 
+                status: s, waktu: sekarang.toLocaleString('id-ID'), late: late, keterangan: ket 
+            });
+        }
+
+        function startTimer() {
+            if(!document.getElementById('nama').value) return alert("PILIH NAMA!");
+            startTime = new Date();
+            document.getElementById('btnStart').disabled = true;
+            document.getElementById('btnStop').disabled = false;
+            document.getElementById('timerDisplay').style.display = 'block';
+            timerInterval = setInterval(() => {
+                document.getElementById('seconds').innerText = Math.floor((new Date() - startTime)/1000);
+            }, 1000);
+        }
+
+        async function stopTimer() {
+            clearInterval(timerInterval);
+            const diff = Math.floor((new Date() - startTime)/1000);
+            const late = (diff > 900);
+            await sendData({
+                nama: document.getElementById('nama').value,
+                divisi: "IZIN", status: document.getElementById('tipeIzin').value,
+                waktu: new Date().toLocaleString('id-ID'), late: late,
+                keterangan: `DURASI: ${Math.floor(diff/60)}m ${diff%60}s`
+            });
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('btnStop').disabled = true;
+            document.getElementById('timerDisplay').style.display = 'none';
+        }
+
+        async function sendData(payload) {
+            document.getElementById('btnAbsen').innerText = "SENDING...";
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("BERHASIL!");
+            document.getElementById('btnAbsen').innerText = "SUBMIT ABSEN";
+            load();
+        }
+
+        window.onload = load;
+        setInterval(load, 30000);
+    </script>
 </body>
 </html>
