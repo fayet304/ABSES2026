@@ -3,242 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Presence System | Full Features v12</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Enterprise Presence | Pro 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Playfair+Display:wght@700&family=Roboto+Mono:wght@700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #00f2fe; --accent: #4facfe; --success: #00ff88;
-            --warning: #f9d423; --danger: #ff4b2b; --glass: rgba(10, 25, 47, 0.9);
+            --primary: #00e5ff;
+            --success: #00ff88;
+            --warning: #f9d423;
+            --danger: #ff4b2b;
+            --bg-base: #0a192f;
+            --card-bg: rgba(10, 25, 47, 0.85);
+            --title-color: #ffffff;
+            --title-font: 'Space Grotesk', sans-serif;
         }
-        body { font-family: 'Space Grotesk', sans-serif; margin: 0; background: #020617; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .bg-animate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%); }
-        .container { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 30px; width: 100%; max-width: 850px; box-shadow: 0 0 50px rgba(0, 242, 254, 0.2); }
-        h2 { text-align: center; letter-spacing: 4px; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 20px 0; }
-        .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .schedule-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; font-size: 0.65rem; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .schedule-item span { display: block; color: var(--primary); font-weight: bold; font-size: 0.8rem; }
-        input, select { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 0.9rem; box-sizing: border-box; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .btn-glow { width: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); border: none; padding: 16px; border-radius: 10px; color: #020617; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            margin: 0; background: var(--bg-base); color: #f1f5f9; 
+            display: flex; justify-content: center; padding: 20px; min-height: 100vh;
+            background-image: radial-gradient(circle at top right, rgba(0, 229, 255, 0.15), transparent);
+            background-attachment: fixed; background-size: cover; background-position: center;
+        }
+
+        .settings-trigger {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: var(--card-bg); border: 1px solid var(--primary);
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary); cursor: pointer; transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-content {
+            background: #112240; border: 2px solid var(--primary);
+            padding: 25px; border-radius: 20px; width: 90%; max-width: 480px;
+            max-height: 90vh; overflow-y: auto; color: white;
+        }
+
+        .main-layout {
+            display: grid; grid-template-columns: 320px 1fr; gap: 25px;
+            width: 100%; max-width: 1300px;
+        }
+
+        /* Container Judul/Logo */
+        .header-container {
+            grid-column: span 2; text-align: center; margin: 10px 0 30px 0;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #mainTitle { 
+            letter-spacing: 5px; font-size: 3rem; margin: 0;
+            color: var(--title-color); font-family: var(--title-font);
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
+        }
+
+        #mainLogo { display: none; max-width: 100%; height: auto; filter: drop-shadow(0 0 10px rgba(0,229,255,0.5)); }
+
+        .card {
+            background: var(--card-bg); backdrop-filter: blur(15px);
+            border: 1px solid rgba(165, 243, 252, 0.2); border-radius: 24px;
+            margin-bottom: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 18px 25px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: rgba(0, 229, 255, 0.1);
+            font-weight: bold; color: var(--primary);
+        }
+
+        .collapsible-content { padding: 25px; }
+        .collapsed .collapsible-content { display: none; }
+
+        label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: var(--primary); font-weight: bold; text-transform: uppercase; }
+        input, select { 
+            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.5); 
+            border: 1px solid rgba(165, 243, 252, 0.3); border-radius: 12px; color: white; margin-bottom: 15px; box-sizing: border-box;
+        }
         
-        /* Menu Izin Section */
-        .menu-izin { background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px; margin: 20px 0; text-align: center; }
-        .timer-box { font-size: 1.2rem; color: var(--warning); font-weight: bold; display: none; margin-top: 10px; }
-        
-        /* Filter Section */
-        .filter-section { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin: 20px 0 10px 0; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.1); }
-        
-        .table-wrap { max-height: 350px; overflow-y: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: rgba(0,0,0,0.8); padding: 12px; color: var(--primary); font-size: 0.75rem; text-align: left; position: sticky; top: 0; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
-        
-        /* Late Monitor */
-        .late-monitor { position: fixed; bottom: 20px; right: 20px; width: 260px; max-height: 380px; background: rgba(15, 23, 42, 0.9); border: 2px solid var(--danger); border-radius: 16px; padding: 15px; box-shadow: 0 0 30px rgba(255, 75, 43, 0.3); z-index: 1000; backdrop-filter: blur(15px); overflow-y: auto; }
-        .late-header { font-size: 0.75rem; font-weight: 800; color: var(--danger); margin-bottom: 10px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255, 75, 43, 0.3); padding-bottom: 5px; }
-        .late-card { background: rgba(255, 75, 43, 0.1); border-left: 3px solid var(--danger); padding: 10px; margin-bottom: 8px; border-radius: 4px; font-size: 0.7rem; }
-        .btn-alt { padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: white; cursor: pointer; font-weight: bold; }
-        .late-alert { color: var(--danger); font-weight: bold; }
+        .btn-glow { 
+            width: 100%; background: linear-gradient(135deg, #00f2fe, #4facfe); 
+            border: none; padding: 15px; border-radius: 12px; color: #020617; 
+            font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; color: var(--primary); padding: 10px; border-bottom: 2px solid var(--primary); }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        .stat-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stat-count { background: var(--primary); color: #000; padding: 2px 10px; border-radius: 10px; font-weight: bold; }
+
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } #mainTitle { font-size: 2rem; } }
     </style>
 </head>
 <body>
-    <div class="bg-animate"></div>
-    <div class="container">
-        <h2>📡 DASHBOARD ABSENSI</h2>
-        
-        <div class="schedule-grid">
-            <div class="schedule-item">KASIR / CS <span>PAGI 10:30 | SIANG 13:00 | MALAM 22:30</span></div>
-            <div class="schedule-item">MKT / CRM <span>11:15</span></div>
-            <div class="schedule-item">ADMIN / STAFF <span>10:30</span></div>
-        </div>
 
-        <div class="input-group">
-            <label>CARI NAMA</label>
-            <input type="text" id="search" placeholder="Ketik nama..." onkeyup="filterNames()">
-            <select id="nama" size="4" style="margin-top:10px">
-                <option value="AGUNG RAFIANSYAH">AGUNG RAFIANSYAH</option>
-                <option value="ANGEL KUSNITA PERMATA DEWI">ANGEL KUSNITA PERMATA DEWI</option>
-                <option value="ARIK DINATA KUSUMA">ARIK DINATA KUSUMA</option>
-                <option value="ARISON">ARISON</option>
-                <option value="AUREL ADHITYA ANDIK">AUREL ADHITYA ANDIK</option>
-                <option value="CUSYATI">CUSYATI</option>
-                <option value="DEDEN SURYANA">DEDEN SURYANA</option>
-                <option value="DIFI ZIANKA LISTIAWAN">DIFI ZIANKA LISTIAWAN</option>
-                <option value="DIVA PINKY">DIVA PINKY</option>
-                <option value="GALANG TRI RISKI">GALANG TRI RISKI</option>
-                <option value="HERMAN SUGITO">HERMAN SUGITO</option>
-                <option value="INDAH WULAN JULI">INDAH WULAN JULI</option>
-                <option value="INEZ WULANDARI">INEZ WULANDARI</option>
-                <option value="M GADAVI">M GADAVI</option>
-                <option value="MALEK RAHMAD">MALEK RAHMAD</option>
-                <option value="MUHAMMAD ALFAYET">MUHAMMAD ALFAYET</option>
-                <option value="MUHAMMAD NURHADI">MUHAMMAD NURHADI</option>
-                <option value="MUHAMMAD RIDWAN HIDAYAT">MUHAMMAD RIDWAN HIDAYAT</option>
-                <option value="NANDI RAMDAS SAPUTRA">NANDI RAMDAS SAPUTRA</option>
-                <option value="NOVRIAN SAPUTRA">NOVRIAN SAPUTRA</option>
-                <option value="PUTRI AJI MEINASARI">PUTRI AJI MEINASARI</option>
-                <option value="RIAN APRIANSYAH">RIAN APRIANSYAH</option>
-                <option value="RIZKY HENDRA">RIZKY HENDRA</option>
-                <option value="SAHFIRA DEWI MARPAUNG">SAHFIRA DEWI MARPAUNG</option>
-                <option value="SARAH SITOMPUL">SARAH SITOMPUL</option>
-                <option value="SAYUTI">SAYUTI</option>
-                <option value="YOGI HENDAR PRASETYA">YOGI HENDAR PRASETYA</option>
-                <option value="YUSRIL ARDIANSYAH">YUSRIL ARDIANSYAH</option>
-            </select>
-        </div>
+    <div class="settings-trigger" onclick="openSettings()"><i class="fa-solid fa-gear"></i></div>
 
-        <div class="form-row" style="margin-top:15px">
-            <select id="divisi" onchange="toggleShift()">
-                <option value="kasir">KASIR</option>
-                <option value="cs">CS</option>
-                <option value="admin">ADMIN</option>
-                <option value="STAFF">STAFF</option>
-                <option value="marketing">MARKETING</option>
-                <option value="CRM">CRM</option>
-            </select>
-            <div id="shift-container">
-                <select id="shift">
-                    <option value="pagi">SHIFT PAGI</option>
-                    <option value="siang">SHIFT SIANG</option>
-                    <option value="malam">SHIFT MALAM</option>
-                </select>
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <h3 style="color:var(--primary); text-align:center; margin-top:0;">🛠️ ADMIN PANEL</h3>
+            
+            <div id="lockSection">
+                <label>PIN AKSES</label>
+                <input type="password" id="pinInput" placeholder="PIN: 1234">
+                <button class="btn-glow" onclick="verifyPin()">UNLOCK</button>
+                <button onclick="closeSettings()" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">Batal</button>
             </div>
-            <select id="status"><option value="HADIR">HADIR</option><option value="PULANG">PULANG</option></select>
-        </div>
-        <button class="btn-glow" id="btnAbsen" onclick="absen()">SUBMIT ABSEN</button>
 
-        <div class="menu-izin">
-            <h4 style="margin-top:0; color:var(--primary)">PENGATURAN IZIN</h4>
-            <select id="tipeIzin" style="width: 50%; margin-bottom: 10px;">
-                <option value="Toilet 🚽">Toilet 🚽</option>
-                <option value="Beli Makan 🍔">Beli Makan 🍔</option>
-                <option value="Merokok 🚬">Merokok 🚬</option>
-                <option value="Istirahat Marketing 🍱">Istirahat Marketing 🍱</option>
-            </select>
-            <br>
-            <button class="btn-alt" id="btnStart" onclick="startTimer()" style="background:var(--success); color:#000">START</button>
-            <button class="btn-alt" id="btnStop" onclick="stopTimer()" style="background:var(--danger)" disabled>STOP</button>
-            <div class="timer-box" id="timerDisplay">⏳ <span id="seconds">0</span> DETIK</div>
-        </div>
+            <div id="adminPanel" style="display:none;">
+                <label>Tipe Judul</label>
+                <select id="headerType" onchange="toggleHeaderInputs()">
+                    <option value="text">Hanya Teks</option>
+                </select>
 
-        <div class="filter-section">
-            <label>📅 LIHAT TANGGAL:</label>
-            <input type="date" id="filterDate" onchange="renderData()">
-            <button class="btn-alt" onclick="resetFilter()" style="font-size:0.7rem; padding: 5px 10px;">RESET</button>
-        </div>
+                <div id="textOptions">
+                    <label>Tulisan Judul</label>
+                    <input type="text" id="inputTitle" placeholder="Ganti Judul Teks...">
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <div style="flex:1;"><label>Warna Teks</label><input type="color" id="titleColorPicker"></div>
+                        <div style="flex:1;"><label>Gaya Font</label>
+                            <select id="fontSelect">
+                                <option value="'Space Grotesk', sans-serif">Modern</option>
+                                <option value="'Playfair Display', serif">Elegant</option>
+                                <option value="'Montserrat', sans-serif">Bold</option>
+                                <option value="'Roboto Mono', monospace">Classic</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="table-wrap">
-            <table>
-                <thead><tr><th>NAMA/DIVISI</th><th>STATUS</th><th>LOG WAKTU</th></tr></thead>
-                <tbody id="list"></tbody>
-            </table>
+                <div id="logoOptions" style="display:none;">
+                    <label>URL Logo PNG</label>
+                    <input type="text" id="logoUrlInput" placeholder="Paste link logo transparan...">
+                    <label>Tinggi Logo (px)</label>
+                    <input type="number" id="logoHeightInput" placeholder="Contoh: 80">
+                </div>
+
+                <hr border="0" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+                
+                <label>URL Gambar Latar (Background)</label>
+                <input type="text" id="bgUrl" placeholder="Paste link gambar background...">
+                
+                <button class="btn-glow" onclick="saveSettings()">SIMPAN PERUBAHAN</button>
+                <button onclick="logoutAdmin()" style="background:none; border:none; color:var(--danger); width:100%; margin-top:15px; cursor:pointer;">Kunci Kembali</button>
+            </div>
         </div>
     </div>
 
-    <div class="late-monitor">
-        <div class="late-header"><span>⚠️ LATE/OVER LIMIT</span> <span id="lateCount">0</span></div>
-        <div id="lateList"></div>
+    <div class="main-layout">
+        <div class="header-container">
+            <h2 id="mainTitle">GONG XI FA CAI 2026</h2>
+            <img id="mainLogo" src="" alt="System Logo">
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <div class="collapsible-header" onclick="toggleCard(this)"><span>📊 IZIN HARI INI</span><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="collapsible-content" id="izinStatsContent"><center><small>Memuat...</small></center></div>
+            </div>
+            
+            <div class="card">
+                <div class="collapsible-header"><span>ℹ️ INFO</span></div>
+                <div class="collapsible-content"><small style="color:#888;">System Ready 2026</small></div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="card" id="cardAbsen">
+                <div class="collapsible-header" onclick="toggleCard(this)"><span>📝 FORM PRESENSI</span><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <label>Cari Nama</label>
+                    <input type="text" id="search" placeholder="Ketik nama..." onkeyup="filterNames()">
+                    <select id="nama" size="5" style="height: 120px;">
+                        <option value="AGUNG RAFIANSYAH">AGUNG RAFIANSYAH</option>
+                        <option value="ANGEL KUSNITA PERMATA.D">ANGEL KUSNITA PERMATA.D</option>
+                        <option value="ARIK DINATA KUSUMA">ARIK DINATA KUSUMA</option>
+                        <option value="ARISON">ARISON</option>
+                        <option value="AUREL ADHITYA ANDIK">AUREL ADHITYA ANDIK</option>
+                        <option value="CUSYATI">CUSYATI</option>
+                        <option value="DEDEN SURYANA">DEDEN SURYANA</option>
+                        <option value="DIFI ZIANKA LISTIAWAN">DIFI ZIANKA LISTIAWAN</option>
+                        <option value="DIVA PINKY">DIVA PINKY</option>
+                        <option value="GALANG TRI RISKI">GALANG TRI RISKI</option>
+                        <option value="HERMAN SUGITO">HERMAN SUGITO</option>
+                        <option value="INDAH WULAN JULI">INDAH WULAN JULI</option>
+                        <option value="INEZ WULANDARI">INEZ WULANDARI</option>
+                        <option value="M GADAVI">M GADAVI</option>
+                        <option value="MALEK RAHMAD">MALEK RAHMAD</option>
+                        <option value="MUHAMMAD ALFAYET">MUHAMMAD ALFAYET</option>
+                        <option value="MUHAMMAD NURHADI">MUHAMMAD NURHADI</option>
+                        <option value="MUHAMMAD RIDWAN HIDAYAT">MUHAMMAD RIDWAN HIDAYAT</option>
+                        <option value="NANDI RAMDAS SAPUTRA">NANDI RAMDAS SAPUTRA</option>
+                        <option value="NOVRIAN SAPUTRA">NOVRIAN SAPUTRA</option>
+                        <option value="PUTRI AJI MEINASARI">PUTRI AJI MEINASARI</option>
+                        <option value="RIAN APRIANSYAH">RIAN APRIANSYAH</option>
+                        <option value="RIZKY HENDRA">RIZKY HENDRA</option>
+                        <option value="SAHFIRA DEWI MARPAUNG">SAHFIRA DEWI MARPAUNG</option>
+                        <option value="SARAH SITOMPUL">SARAH SITOMPUL</option>
+                        <option value="SAYUTI">SAYUTI</option>
+                        <option value="YOGI HENDAR PRASETYA">YOGI HENDAR PRASETYA</option>
+                        <option value="YUSRIL ARDIANSYAH">YUSRIL ARDIANSYAH</option>
+                    </select>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div><label>Divisi</label>
+                            <select id="divisi" onchange="toggleShift()">
+                                <option value="KASIR">KASIR</option><option value="CS">CS</option>
+                                <option value="ADMIN">ADMIN</option><option value="STAFF">STAFF</option>
+                                <option value="MARKETING">MARKETING</option><option value="CRM">CRM</option>
+                            </select>
+                        </div>
+                        <div id="shift-container"><label>Shift</label>
+                            <select id="shift">
+                                <option value="PAGI">PAGI</option><option value="SIANG">SIANG</option><option value="MALAM">MALAM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label>Status</label>
+                    <select id="status"><option value="HADIR">MASUK KERJA</option><option value="PULANG">PULANG KERJA</option></select>
+                    <button class="btn-glow" id="btnAbsen" onclick="absen()">KIRIM PRESENSI</button>
+                </div>
+            </div>
+
+            <div class="card collapsed" id="cardIzin">
+                <div class="collapsible-header" onclick="toggleCard(this)"><span>⌛ MENU IZIN KELUAR (TIMER)</span><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="collapsible-content" style="text-align:center;">
+                    <label>Keperluan</label>
+                    <select id="tipeIzin">
+                        <option value="Toilet 🚽">Toilet 🚽</option><option value="Beli Makan 🍔">Beli Makan 🍔</option>
+                        <option value="Merokok 🚬">Merokok 🚬</option><option value="Istirahat 🍱">Istirahat 🍱</option>
+                    </select>
+                    <div id="timerDisplay" style="display:none; font-size:3rem; color:var(--primary); margin:15px 0; font-weight:bold;">⏳ <span id="seconds">0</span>s</div>
+                    <div style="display:flex; gap:15px; justify-content:center;">
+                        <button class="btn-glow" id="btnStart" onclick="startTimer()" style="background:var(--success); color:#000; width:120px;">START</button>
+                        <button class="btn-glow" id="btnStop" onclick="stopTimer()" style="background:var(--danger); width:120px;" disabled>STOP</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card collapsed" id="cardLog">
+                <div class="collapsible-header" onclick="toggleCard(this)"><span>📜 LOG AKTIVITAS TERBARU</span><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead><tr><th>NAMA</th><th>STATUS</th><th>WAKTU</th></tr></thead>
+                            <tbody id="list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbw1rKF7UeITZBkghQU1NMVZ8I-7IQuQsExeWNDKPk_Ur5skYmJRxX3HPr4E-EuRxv8z1g/exec';
-        let startTime, timerInterval;
-        let rawData = [];
-        
-        const JADWAL = { 
-            admin: { h: 10, m: 30 }, 
-            marketing: { h: 11, m: 15 }, 
-            STAFF: { h: 10, m: 30 },
-            CRM: { h: 11, m: 15 }, 
-            pagi: { h: 10, m: 30 }, 
-            siang: { h: 13, m: 0 }, 
-            malam: { h: 22, m: 30 } 
-        };
+        const ADMIN_PIN = "1234";
+        let startTime, timerInterval, rawData = [];
 
-        function toggleShift() {
-            const d = document.getElementById('divisi').value;
-            document.getElementById('shift-container').style.display = (d === 'kasir' || d === 'cs') ? 'block' : 'none';
+        // --- ADMIN SYSTEM ---
+        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; logoutAdmin(); }
+        function verifyPin() {
+            if(document.getElementById('pinInput').value === ADMIN_PIN) {
+                document.getElementById('lockSection').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+            } else { alert("PIN Salah!"); }
+        }
+        function logoutAdmin() {
+            document.getElementById('lockSection').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('pinInput').value = "";
         }
 
-        function filterNames() {
-            let v = document.getElementById('search').value.toUpperCase();
-            let opts = document.getElementById('nama').options;
-            for(let o of opts) o.style.display = o.text.includes(v) ? "" : "none";
+        function toggleHeaderInputs() {
+            const type = document.getElementById('headerType').value;
+            document.getElementById('textOptions').style.display = type === 'text' ? 'block' : 'none';
+            document.getElementById('logoOptions').style.display = type === 'logo' ? 'block' : 'none';
         }
 
-        async function load() {
-            try {
-                const res = await fetch(scriptURL);
-                rawData = await res.json();
-                renderData();
-            } catch (e) { console.log("Refresh..."); }
+        function saveSettings() {
+            const type = document.getElementById('headerType').value;
+            const titleText = document.getElementById('inputTitle').value;
+            const titleColor = document.getElementById('titleColorPicker').value;
+            const titleFont = document.getElementById('fontSelect').value;
+            const logoUrl = document.getElementById('logoUrlInput').value;
+            const logoHeight = document.getElementById('logoHeightInput').value;
+            const bgUrl = document.getElementById('bgUrl').value;
+
+            // Simpan Tipe
+            localStorage.setItem('headerType', type);
+            
+            // Simpan Teks
+            if(titleText) localStorage.setItem('systemTitle', titleText);
+            localStorage.setItem('titleColor', titleColor);
+            localStorage.setItem('titleFont', titleFont);
+
+            // Simpan Logo
+            localStorage.setItem('logoUrl', logoUrl);
+            localStorage.setItem('logoHeight', logoHeight);
+
+            // Simpan Background
+            if(bgUrl) localStorage.setItem('userBg', bgUrl);
+
+            applyStyles();
+            alert("Pengaturan Disimpan!"); 
+            closeSettings();
         }
 
-        function renderData() {
-            const filterVal = document.getElementById('filterDate').value;
-            let filtered = rawData.slice().reverse();
+        function applyStyles() {
+            const type = localStorage.getItem('headerType') || 'text';
+            const sTitle = localStorage.getItem('systemTitle') || 'GONG XI FA CAI 2026';
+            const sColor = localStorage.getItem('titleColor') || '#ffffff';
+            const sFont = localStorage.getItem('titleFont') || "'Space Grotesk', sans-serif";
+            const sLogoUrl = localStorage.getItem('logoUrl') || '';
+            const sLogoHeight = localStorage.getItem('logoHeight') || '80';
+            const sBg = localStorage.getItem('userBg');
 
-            if (filterVal) {
-                const [y, m, d] = filterVal.split('-');
-                const targetDate = `${parseInt(d)}/${parseInt(m)}/${y}`;
-                filtered = filtered.filter(item => item.waktu.includes(targetDate));
+            // Set Header
+            const titleEl = document.getElementById('mainTitle');
+            const logoEl = document.getElementById('mainLogo');
+
+            if(type === 'logo' && sLogoUrl) {
+                titleEl.style.display = 'none';
+                logoEl.style.display = 'block';
+                logoEl.src = sLogoUrl;
+                logoEl.style.height = sLogoHeight + 'px';
+            } else {
+                titleEl.style.display = 'block';
+                logoEl.style.display = 'none';
+                titleEl.innerText = sTitle;
+                titleEl.style.color = sColor;
+                titleEl.style.fontFamily = sFont;
             }
 
-            // Update Tabel
-            document.getElementById('list').innerHTML = filtered.slice(0, 50).map(l => `
-                <tr>
-                    <td><b>${l.nama}</b><br>${l.divisi}</td>
-                    <td>${l.status}</td>
-                    <td class="${l.late ? 'late-alert' : ''}">${l.waktu}<br><small>${l.keterangan}</small></td>
-                </tr>
-            `).join('');
-
-            // Update Monitor Late
-            const lates = filtered.filter(l => l.late);
-            document.getElementById('lateCount').innerText = lates.length;
-            document.getElementById('lateList').innerHTML = lates.map(l => {
-                let label = (l.divisi.includes("IZIN")) ? "MELEBIHI WAKTU" : "TERLAMBAT";
-                return `
-                    <div class="late-card">
-                        <b>${l.nama}</b><br>
-                        <span style="color:var(--warning); font-weight:bold;">[${label}]</span><br>
-                        <small>${l.status} - ${l.keterangan}</small>
-                    </div>
-                `;
-            }).join('');
+            if(sBg) document.body.style.backgroundImage = `url('${sBg}')`;
+            
+            // Sync Form Admin
+            document.getElementById('headerType').value = type;
+            document.getElementById('inputTitle').value = sTitle;
+            document.getElementById('titleColorPicker').value = sColor;
+            document.getElementById('fontSelect').value = sFont;
+            document.getElementById('logoUrlInput').value = sLogoUrl;
+            document.getElementById('logoHeightInput').value = sLogoHeight;
+            toggleHeaderInputs();
         }
 
-        function resetFilter() {
-            document.getElementById('filterDate').value = "";
-            renderData();
-        }
-
-        async function absen() {
-            const n = document.getElementById('nama').value;
-            const d = document.getElementById('divisi').value;
-            const s = document.getElementById('status').value;
-            if(!n) return alert("PILIH NAMA!");
-
-            const sekarang = new Date();
-            let late = false;
-            let ket = "-";
-
-            if(s === "HADIR") {
-                let batas = (d === 'kasir' || d === 'cs') ? JADWAL[document.getElementById('shift').value] : JADWAL[d];
-                if(sekarang.getHours() > batas.h || (sekarang.getHours() === batas.h && sekarang.getMinutes() > batas.m)) {
-                    late = true; ket = "TERLAMBAT";
-                }
-            }
-
-            await sendData({ 
-                nama: n, 
-                divisi: d.toUpperCase() + ( (d==='cs'||d==='kasir') ? " ("+document.getElementById('shift').value.toUpperCase()+")" : "" ), 
-                status: s, waktu: sekarang.toLocaleString('id-ID'), late: late, keterangan: ket 
-            });
-        }
-
+        // --- CORE FUNCTIONS ---
         function startTimer() {
-            if(!document.getElementById('nama').value) return alert("PILIH NAMA!");
+            if(!document.getElementById('nama').value) return alert("Pilih Nama!");
             startTime = new Date();
             document.getElementById('btnStart').disabled = true;
             document.getElementById('btnStop').disabled = false;
@@ -251,27 +370,87 @@
         async function stopTimer() {
             clearInterval(timerInterval);
             const diff = Math.floor((new Date() - startTime)/1000);
-            const late = (diff > 900);
-            await sendData({
+            const p = {
                 nama: document.getElementById('nama').value,
-                divisi: "IZIN", status: document.getElementById('tipeIzin').value,
-                waktu: new Date().toLocaleString('id-ID'), late: late,
-                keterangan: `DURASI: ${Math.floor(diff/60)}m ${diff%60}s`
-            });
+                divisi: "IZIN",
+                status: document.getElementById('tipeIzin').value,
+                waktu: new Date().toLocaleString('id-ID'),
+                keterangan: `Durasi: ${Math.floor(diff/60)}m`
+            };
+            await sendData(p);
             document.getElementById('btnStart').disabled = false;
             document.getElementById('btnStop').disabled = true;
             document.getElementById('timerDisplay').style.display = 'none';
         }
 
-        async function sendData(payload) {
-            document.getElementById('btnAbsen').innerText = "SENDING...";
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("BERHASIL!");
-            document.getElementById('btnAbsen').innerText = "SUBMIT ABSEN";
-            load();
+        function toggleCard(header) { header.parentElement.classList.toggle('collapsed'); }
+        function toggleShift() {
+            const d = document.getElementById('divisi').value;
+            document.getElementById('shift-container').style.display = (d === 'KASIR' || d === 'CS') ? 'block' : 'none';
+        }
+        function filterNames() {
+            let v = document.getElementById('search').value.toUpperCase();
+            let opts = document.getElementById('nama').options;
+            for(let o of opts) o.style.display = o.text.includes(v) ? "" : "none";
         }
 
-        window.onload = load;
+        async function load() {
+            try {
+                const res = await fetch(scriptURL);
+                rawData = await res.json();
+                renderData();
+                updateIzinStats();
+            } catch (e) { console.log("Error Load"); }
+        }
+
+        function renderData() {
+            let filtered = rawData.slice().reverse();
+            document.getElementById('list').innerHTML = filtered.slice(0, 15).map(l => `
+                <tr><td><b>${l.nama}</b><br><small>${l.divisi}</small></td><td>${l.status}</td><td>${l.waktu}</td></tr>
+            `).join('');
+        }
+
+        function updateIzinStats() {
+            const today = new Date().toLocaleDateString('id-ID');
+            const stats = {};
+            rawData.forEach(item => {
+                if(item.divisi === "IZIN" && item.waktu.includes(today)) {
+                    stats[item.nama] = (stats[item.nama] || 0) + 1;
+                }
+            });
+            const sorted = Object.keys(stats).sort((a,b) => stats[b] - stats[a]);
+            document.getElementById('izinStatsContent').innerHTML = sorted.map(n => {
+                const over = stats[n] >= 5;
+                return `<div class="stat-item ${over ? 'alert-limit' : ''}">
+                    <span>${over ? '⚠️ ' : ''}${n}</span><span class="stat-count">${stats[n]}x</span>
+                </div>`;
+            }).join('') || '<center><small>Kosong</small></center>';
+        }
+
+        async function absen() {
+            const payload = {
+                nama: document.getElementById('nama').value,
+                divisi: document.getElementById('divisi').value,
+                shift: document.getElementById('shift').value,
+                status: document.getElementById('status').value,
+                waktu: new Date().toLocaleString('id-ID')
+            };
+            if(!payload.nama) return alert("Pilih nama!");
+            await sendData(payload);
+        }
+
+        async function sendData(p) {
+            try {
+                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(p) });
+                alert("Berhasil!"); load();
+            } catch (e) { alert("Error!"); }
+        }
+
+        window.onload = () => {
+            applyStyles();
+            load(); 
+            toggleShift();
+        };
         setInterval(load, 30000);
     </script>
 </body>
